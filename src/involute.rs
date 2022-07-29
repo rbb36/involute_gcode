@@ -96,8 +96,8 @@ impl Gear {
         let tip_r = self.tip_radius();
         let base_x = base_r;
         let base_y = 0.0;
-        let tip_x = base_r * (umax.cos() + (umax * umax.sin()));
-        let tip_y = base_r * (umax.sin() - (umax * umax.cos()));
+        let tip_x = self.tooth_profile_x(umax);
+        let tip_y = self.tooth_profile_y(umax);
         let base_to_tip = ((base_x - tip_x).powi(2) + (base_y - tip_y).powi(2)).sqrt();
         let thick_cos = (base_r.powi(2) + tip_r.powi(2) - base_to_tip.powi(2))
             / (2.0 * base_r * tip_r);
