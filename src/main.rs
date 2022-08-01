@@ -14,17 +14,18 @@ fn main() {
 
 fn gear_catalog() {
     println!("module\tteeth\tprofile shift\troot width\ttip dia");
-    for p in [10.0, 14.5, 20.0] {
+    for a in [10.0, 14.5, 20.0] {
         for m in [0.5, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0] {
-            for z in [8, 10, 12, 16, 20, 24, 30, 32, 36, 40, 48, 50, 56, 60, 64, 70, 72, 80, 88, 96] {
+            for z in [8, 10, 12, 16, 20, 24, 30, 32, 36, 40, 48,
+                      50, 56, 60, 64, 70, 72, 80, 88, 96] {
                 let mut x = 0.0;
                 if z == 8 { x = 0.4; }
                 else if z == 10 { x = 0.3; }
                 else if z == 12 { x = 0.2; }
                 let gear = Gear{module:m, num_teeth:z as f64,
-                                pressure_angle_degrees:p, profile_shift:x};
+                                pressure_angle_degrees:a, profile_shift:x};
                 println!("{}\t{}\t{}\t{}\t{:0.3}\t{}",
-                         p, m, z, x, gear.root_width(), gear.tip_diameter());
+                         a, m, z, x, gear.root_width(), gear.tip_diameter());
             }
         }
     }
