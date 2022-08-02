@@ -8,32 +8,15 @@ use involute_gcode::{
 
 fn main() {
     // canvas::draw_something("");
-    gear_catalog();
     do_demos();
 }
 
-fn gear_catalog() {
-    println!("module\tteeth\tprofile shift\troot width\ttip dia");
-    for a in [10.0, 14.5, 20.0] {
-        for m in [0.5, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0] {
-            for z in [8, 10, 12, 16, 20, 24, 30, 32, 36, 40, 48,
-                      50, 56, 60, 64, 70, 72, 80, 88, 96] {
-                let mut x = 0.0;
-                if z == 8 { x = 0.4; }
-                else if z == 10 { x = 0.3; }
-                else if z == 12 { x = 0.2; }
-                let gear = Gear{module:m, num_teeth:z as f64,
-                                pressure_angle_degrees:a, profile_shift:x};
-                println!("{}\t{}\t{}\t{}\t{:0.3}\t{}",
-                         a, m, z, x, gear.root_width(), gear.tip_diameter());
-            }
-        }
-    }
-}
-
 fn do_demos() {
+    // demo_gear_mill();
+    demo_gear_mill_offset();
+    println!();
     if false {
-        demo_gear_mill_offset();
+        gear_catalog();
         println!();
         demo_toothface_mill_offset();
         println!();
@@ -54,34 +37,68 @@ fn demo_gear_mill() {
                           num_teeth:10 as f64,
                           pressure_angle_degrees:20.0,
                           profile_shift:0.4};
-    // let faces: Vec<ToothFace> = gear.tooth_faces(10);
-    let offset_faces: Vec<ToothFace> =
-        gear.mill_offset(10, 2.0, 0.2);
-    // for i in 0..faces.len() {
-    //     faces.get(i).unwrap().print_coords();
-    // }
-    for i in 0..offset_faces.len() {
-        println!("G1 Z-0.2");
-        offset_faces.get(i).unwrap().print_gcode();
-        println!("G1 Z5");
-        println!("M00 (stop for inspection)");
-        println!();
-    }
+    gear.print_coords(10);
 }
 
 fn demo_gear_mill_offset() {
-    let gear: Gear = Gear{module:2.0,
-                          num_teeth:10 as f64,
-                          pressure_angle_degrees:20.0,
+    let gear: Gear = Gear{module:1.0,
+                          num_teeth:8 as f64,
+                          pressure_angle_degrees:10.0,
                           profile_shift:0.4};
-    let faces: Vec<ToothFace> = gear.tooth_faces(10);
-    let offset_faces: Vec<ToothFace> =
-        gear.mill_offset(10, 2.0, 0.2);
-    for i in 0..faces.len() {
-        faces.get(i).unwrap().print_coords();
+    let num_face_steps: u32 = 10;
+    let mill_size:f64 = 1.0;
+    let mill_offset:f64 = 0.05;
+    let start_z:f64 = 0.0;
+    let final_depth:f64 = -3.0;
+    let z_step:f64 = -0.2;
+    gear.print_traverse_to_start_gcode(num_face_steps,
+                                       mill_size,
+                                       mill_offset,
+                                       start_z,
+                                       final_depth,
+                                       z_step);
+    let mut prev_z = start_z;
+    for i in 0..((final_depth / z_step).round() as u32) {
+        let mut next_z = prev_z + z_step;
+        if next_z < final_depth { next_z = final_depth; }
+        gear.print_one_layer_slope_gcode(num_face_steps,
+                                         mill_size,
+                                         mill_offset,
+                                         prev_z,
+                                         next_z);
+        println!("G0 Z20");
+        println!("M00 (stop for inspection");
+        println!("G0 Z1");
+        println!();
+        prev_z = next_z;
     }
-    for i in 0..offset_faces.len() {
-        offset_faces.get(i).unwrap().print_coords();
+    // let faces: Vec<ToothFace> = gear.tooth_faces(10);
+    // let offset_faces: Vec<ToothFace> =
+    //     gear.mill_offset(10, 2.0, 0.2);
+    // for i in 0..faces.len() {
+    //     faces.get(i).unwrap().print_coords();
+    // }
+    // for i in 0..offset_faces.len() {
+    //     offset_faces.get(i).unwrap().print_coords();
+    // }
+}
+
+fn gear_catalog() {
+    println!("module\tteeth\tprofile shift\troot width\ttip dia");
+    for a in [10.0, 14.5, 20.0] {
+        for m in [0.5, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0] {
+            for z in [8, 10, 12, 16, 20, 24, 30, 32, 36, 40, 48,
+                      50, 56, 60, 64, 70, 72, 80, 88, 96] {
+                let mut x = 0.0;
+                if z == 8 { x = 0.4; }
+                else if z == 10 { x = 0.3; }
+                else if z == 12 { x = 0.2; }
+                let gear = Gear{module:m, num_teeth:z as f64,
+                                pressure_angle_degrees:a, profile_shift:x};
+                println!("{}\t{}\t{}\t{}\t{:0.3}\t{}",
+                         a, m, z, x, gear.root_width(), gear.tip_diameter());
+            }
+        }
     }
 }
 

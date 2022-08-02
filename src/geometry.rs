@@ -110,7 +110,6 @@ impl Line {
     pub fn intersect(&self, other: Line) -> Point {
         let (self_m, self_b): (f64, f64) = self.get_mb();
         let (other_m, other_b): (f64, f64) = other.get_mb();
-        println!("sm {}, sb {}, om {}, ob {}", self_m, self_b, other_m, other_b);
         // y = self_m * x + self_b;
         // y = other_m * x + other_b;
         // self_m * x + self_b = other_m * x + other_b;
@@ -121,7 +120,6 @@ impl Line {
         let x = (other_b - self_b) / (self_m - other_m);
         let y = self_m * x + self_b;
         let oy = other_m * x + other_b;
-        println!("x: {}, self y: {}, other y: {}", x, y, oy);
         Point{x, y}
     }
 }

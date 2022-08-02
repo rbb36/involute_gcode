@@ -13,6 +13,90 @@ pub struct Gear {
 }
 
 impl Gear {
+    pub fn print_coords(&self, num_face_steps:u32) {
+        for face in self.tooth_faces(num_face_steps) {
+            face.print_coords();
+        }
+    }
+    pub fn print_traverse_to_start_gcode(&self,
+                                         num_face_steps:u32,
+                                         mill_size:f64,
+                                         mill_offset:f64,
+                                         start_z:f64,
+                                         final_depth:f64,
+                                         z_step:f64) {
+        let offset_faces: Vec<ToothFace> =
+            self.mill_offset(num_face_steps, mill_size, mill_offset);
+        let face = offset_faces.get(0).unwrap();
+        let traverse_z = start_z + 10.0;
+        let line_up_x = face.first().x;
+        let line_up_y = face.first().y;
+        let line_up_z = start_z + 1.0;
+        println!(";; -------------------------------------");
+        println!(";; Involute Gear G-Code");
+        println!(";; -------------------------------------");
+        println!(";; Module: m={:.3}", self.module);
+        println!(";; Num Teeth: z={:.3}", self.num_teeth);
+        println!(";; Pressure Angle: a={:.3}", self.pressure_angle_degrees);
+        println!(";; Profile Shift: x={:.3}", self.profile_shift);
+        println!(";; Num Face Steps: {:.3}", num_face_steps);
+        println!(";; Mill Size: {:.3}", mill_size);
+        println!(";; Mill Offset: {:.3}", mill_offset);
+        println!(";; Start Z: {:.3}", start_z);
+        println!(";; Final Depth: {:.3}", final_depth);
+        println!(";; Z Step: {:.3}", z_step);
+        println!(";; -------------------------------------");
+        println!("G0 Z{:.3}", traverse_z);
+        println!("G0 X{:.3} Y{:.3}", line_up_x, line_up_y);
+        println!("M00 (stop for inspection)");
+        println!("G0 Z{:.3}", line_up_z);
+        println!();
+    }
+    pub fn print_one_layer_slope_gcode(&self,
+                                       num_face_steps: u32,
+                                       mill_size: f64,
+                                       mill_offset: f64,
+                                       start_z: f64,
+                                       end_z: f64) {
+        let offset_faces: Vec<ToothFace> =
+            self.mill_offset(num_face_steps, mill_size, mill_offset);
+        let num_faces = offset_faces.len();
+        let num_teeth = num_faces / 2;
+        let total_dz = end_z - start_z;
+        let face_dz = total_dz / (num_faces as f64);
+        let mut prev_z = start_z;
+        for this_tooth_i in 0..num_teeth {
+            let this_face_i = this_tooth_i * 2;
+            let next_face_i = (this_face_i + num_faces + 1) % num_faces;
+            let subs_face_i = (this_face_i + num_faces + 2) % num_faces;
+            let this_face = offset_faces.get(this_face_i).unwrap();
+            let next_face = offset_faces.get(next_face_i).unwrap();
+            let subs_face = offset_faces.get(subs_face_i).unwrap();
+            // print this face G-code with slope.
+            this_face.print_gcode_with_slope(prev_z, face_dz);
+            prev_z += face_dz;
+            // print tip line to next face.
+            println!();
+            // -- not actually needed, it will do this implicitly
+            // this_last_point = this_face.last();
+            // next_first_point = next_face.first();
+            // print next face.
+            next_face.print_gcode_with_slope(prev_z, face_dz);
+            prev_z += face_dz;
+            // print arc to subsequent face.
+            let arc_0 = next_face.last();
+            let arc_1 = subs_face.first();
+            let arc_c_x = (arc_0.x + arc_1.x)/2.0;
+            let arc_c_y = (arc_0.y + arc_1.y)/2.0;
+            let arc_c_i = arc_c_x - arc_0.x;
+            let arc_c_j = arc_c_y - arc_0.y;
+            println!("G17 (set XY coordinate system for arc cut)");
+            println!("G2 X{:0.3} Y{:0.3} I{:0.3} J{:0.3}",
+                     arc_1.x, arc_1.y, arc_c_i, arc_c_j);
+            // println!("G1 Z-0.2");
+            // offset_faces.get(i).unwrap().print_gcode();
+        }
+    }
     pub fn print_params(&self) {
         println!("module: {}", self.module);
         println!("num_teeth: {}", self.num_teeth);
@@ -139,7 +223,6 @@ impl Gear {
             let x = self.tooth_profile_x(u);
             let y = self.tooth_profile_y(u);
             let point: Point = Point{x, y};
-            println!("{:?}", &point);
             points.push(point);
         }
         ToothFace{points}
@@ -303,6 +386,14 @@ impl ToothFace {
     pub fn print_gcode(&self) {
         for point in &self.points {
             println!("G1 X{:.3} Y{:.3}", point.x, point.y);
+        }
+    }
+    pub fn print_gcode_with_slope(&self, prev_z:f64, face_dz:f64) {
+        let dz = face_dz / ((self.points.len() as f64) - 1.0);
+        for i in 0..self.points.len() {
+            let point = self.points.get(i).unwrap();
+            let z = prev_z + ((i as f64) * dz);
+            println!("G1 X{:.3} Y{:.3} Z{:.3}", point.x, point.y, z);
         }
     }
 }
