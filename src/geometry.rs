@@ -36,6 +36,9 @@ impl Point {
     pub fn distance_to(&self, other: &Self) -> f64 {
         return ((self.x - other.x).powi(2) + (self.y - other.y).powi(2)).sqrt();
     }
+    pub fn copy(&self) -> Point {
+        Point{x:self.x, y:self.y}
+    }
 }
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
@@ -119,7 +122,7 @@ impl Line {
         // x = (other_b - self_b) / (self_m - other_m);
         let x = (other_b - self_b) / (self_m - other_m);
         let y = self_m * x + self_b;
-        let oy = other_m * x + other_b;
+        // let oy = other_m * x + other_b;
         Point{x, y}
     }
 }
