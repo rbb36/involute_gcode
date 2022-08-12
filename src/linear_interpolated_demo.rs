@@ -1,4 +1,5 @@
 use crate::{
+    involute::linear_interpolated_gear,
     involute::linear_interpolated_gear::LinearInterpolatedGear,
     involute::gear_params::GearParams,
     involute::tooth_face::ToothFace,
@@ -235,7 +236,7 @@ fn demo_toothface_mill_offset() {
     let last: &ToothFace = faces.get(faces.len() - 1).unwrap();
     let zeroth: &ToothFace = faces.get(0).unwrap();
     let first: &ToothFace = faces.get(1).unwrap();
-    let face: ToothFace = zeroth.mill_offset(last, first, 2.0, 0.2);
+    let face: ToothFace = linear_interpolated_gear::mill_offset_tooth_face(zeroth, last, first, 2.0, 0.2);
     face.print_coords();
     println!();
     zeroth.print_coords();

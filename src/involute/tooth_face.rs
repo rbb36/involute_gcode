@@ -1,6 +1,4 @@
-use std::f64::consts::PI;
-
-use crate::geometry::{Line,Point};
+use crate::geometry::{Point};
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -14,54 +12,6 @@ impl ToothFace {
     }
     pub fn last(&self) -> &Point {
         self.points.get(self.points.len() - 1).unwrap()
-    }
-    pub fn mill_offset(&self,
-                       prev: &ToothFace,
-                       next: &ToothFace,
-                       mill_d: f64,
-                       add_margin: f64) -> ToothFace {
-        // let s_first: &Point = self.first();
-        // let p_first: &Point = prev.first();
-        // let n_first: &Point = next.first();
-        // let s_last: &Point = self.last();
-        // let p_last: &Point = prev.last();
-        // let n_last: &Point = next.last();
-        let total_offset: f64 = mill_d / 2.0 + add_margin;
-        let mut points: Vec<Point> = Vec::new();
-        // 1. move self.first() along path to previous.last()
-        let base_angle =
-            (prev.last().y - self.first().y)
-            .atan2(prev.last().x - self.first().x);
-        points.push(self.first().translate(base_angle, total_offset));
-        // 2. move all except first and last orthogonal to a
-        // line from prior to next
-        for x in 1..=(self.points.len() - 2) {
-            let prio = self.points.get(x - 1).unwrap();
-            let this = self.points.get(x).unwrap();
-            let post = self.points.get(x + 1).unwrap();
-            let angle = (post.y - prio.y).atan2(post.x - prio.x);
-            let ortho = angle - (PI/2.0);
-            // println!("angle: {}, ortho: {}", angle, ortho);
-            points.push(this.translate(ortho, total_offset));
-        }
-        {
-            // offset self last segment
-            let prio = self.points.get(self.points.len() - 2).unwrap();
-            let post = next.first();
-            let p1: Point = Point{x:prio.x, y:prio.y};
-            let p2: Point = Point{x:self.last().x, y:self.last().y};
-            let face_l: Line = Line{p1, p2};
-            let face_lo: Line = face_l.offset_right(total_offset);
-            // offset segment from self.last() to next.first()
-            let p1: Point = Point{x:self.last().x, y:self.last().y};
-            let p2: Point = Point{x:post.x, y:post.y};
-            let tip_l: Line = Line{p1, p2};
-            let tip_lo: Line = tip_l.offset_right(total_offset);
-            // intersect those two lines
-            let intersect = face_lo.intersect(tip_lo);
-            points.push(intersect)
-        }
-        ToothFace{points}
     }
     pub fn copy(&self) -> ToothFace {
         let mut new_points: Vec<Point> = Vec::new();
