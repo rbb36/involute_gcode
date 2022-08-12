@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::geometry::{Line, Point, PRECISION};
+use crate::geometry::PRECISION;
 
 #[derive(Debug)]
 #[allow(dead_code)]

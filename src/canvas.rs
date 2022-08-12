@@ -6,7 +6,7 @@ pub const BLACK:SolidSource = SolidSource {r:0x0, g:0x0, b:0x0, a:0xff};
 pub const WHITE:SolidSource = SolidSource {r:0xff, g:0xff, b:0xff, a:0xff};
 
 pub fn draw_something(out_path: &str) {
-    let SOLID:StrokeStyle = StrokeStyle {
+    let solid_stroke:StrokeStyle = StrokeStyle {
         cap: LineCap::Round, join: LineJoin::Round,
         width: 4.0, miter_limit: 4.0,
         dash_array: vec![1.0], dash_offset: 0.0,
@@ -27,10 +27,10 @@ pub fn draw_something(out_path: &str) {
     dt.stroke(
         &path,
         &Source::Solid(WHITE),
-        &SOLID,
+        &solid_stroke,
         &DrawOptions::new()
     );
-    dt.write_png("example.png");
+    dt.write_png(out_path).unwrap();
 
     // let mut pb = PathBuilder::new();
     // pb.move_to(100., 10.);

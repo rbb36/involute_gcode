@@ -1,11 +1,9 @@
 use std::f64::consts::PI;
 
-use crate::geometry::{Line, Point, PRECISION};
-
-const CLIMB_CUT:bool = true;
-
+use crate::geometry::{Line,Point};
 
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct ToothFace {
     pub points: Vec<Point>,
 }
