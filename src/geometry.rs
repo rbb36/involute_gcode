@@ -5,6 +5,60 @@ use std::f64::consts::PI;
 pub const PRECISION: f64 = 1_000_000.0;
 
 #[derive(Debug)]
+pub struct Arc {
+    pub circle: Circle,
+    pub start: Point,
+    pub end: Point,
+}
+
+impl Arc {
+    // angle in radians
+    pub fn start_angle(&self) -> f64 {
+        self.circle.center.angle_to(&self.start)
+    }
+    // angle in radians
+    pub fn included_angle(&self) -> f64 {
+        self.circle.center.angle_to(&self.end) - self.start_angle()
+    }
+    // center x offset from starting point x
+    pub fn gcode_i(&self) -> f64 {
+        self.circle.center.x - self.start.x
+    }
+    // center y offset from starting point y
+    pub fn gcode_j(&self) -> f64 {
+        self.circle.center.y - self.start.y
+    }
+}
+
+#[derive(Debug)]
+pub struct Circle {
+    pub center: Point,
+    pub radius: f64,
+}
+
+impl Circle {
+    pub fn copy(&self) -> Circle {
+        Circle{center:self.center.copy(), radius:self.radius}
+    }
+}
+
+pub fn circle_from_points(b:&Point, c:&Point, d:&Point) -> Circle {
+    let offset: f64 = c.x.powi(2) + c.y.powi(2);
+    let bc: f64 = (b.x.powi(2) + b.y.powi(2) - offset) / 2.0;
+    let cd: f64 = (offset - d.x.powi(2) - d.y.powi(2)) / 2.0;
+    let det: f64 = ((b.x - c.x) * (c.y - d.y)) - ((c.x - d.x) * (b.y - c.y));
+    
+    let idet: f64 = 1.0 / det;
+    
+    let x: f64 = ((bc * (c.y - d.y)) - (cd * (b.y - c.y))) * idet;
+    let y: f64 = ((cd * (b.x - c.x)) - (bc * (c.x - d.x))) * idet;
+    let radius: f64 = ((c.x - x).powi(2) + (c.y - y).powi(2)).sqrt();
+    
+    let center: Point = Point{x, y};
+    Circle{center, radius}
+}
+
+#[derive(Debug)]
 #[allow(dead_code)]
 pub struct Point {
     pub x: f64,

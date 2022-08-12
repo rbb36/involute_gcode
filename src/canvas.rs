@@ -5,6 +5,22 @@ use raqote::*;
 pub const BLACK:SolidSource = SolidSource {r:0x0, g:0x0, b:0x0, a:0xff};
 pub const WHITE:SolidSource = SolidSource {r:0xff, g:0xff, b:0xff, a:0xff};
 
+pub fn draw_arc(dt:&mut DrawTarget) {
+    let solid_stroke:StrokeStyle = StrokeStyle {
+        cap: LineCap::Round, join: LineJoin::Round,
+        width: 4.0, miter_limit: 4.0,
+        dash_array: vec![1.0], dash_offset: 0.0,
+    };
+    let mut pb = PathBuilder::new();
+    pb.move_to(0.0, 0.0);
+    pb.move_to(160.0, 190.0);
+    // center x, center y, radius, start angle, included angle
+    pb.arc(160.0, 190.0, 180.0, -0.25 * PI as f32, -0.5 * PI as f32);
+    let path = pb.finish();
+    dt.push_clip(&path);
+    dt.stroke(&path, &Source::Solid(WHITE), &solid_stroke, &DrawOptions::new());
+}
+
 pub fn draw_something(out_path: &str) {
     let solid_stroke:StrokeStyle = StrokeStyle {
         cap: LineCap::Round, join: LineJoin::Round,

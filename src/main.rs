@@ -1,7 +1,10 @@
 use std::f64::consts::PI;
 
 use involute_gcode::{
+    geometry,
     geometry::{Point}, //, Line},
+    involute::arc_interpolate,
+    involute::gear::Gear,
     involute::gear_params::GearParams,
     involute::tooth_face::ToothFace,
     canvas,
@@ -14,7 +17,10 @@ fn main() {
 }
 
 fn do_demos() {
+    arc_demo();
     if false {
+        demo_circle_from_points();
+        println!();
         linear_interpolated_demo::do_demos();
         println!();
         gear_catalog();
@@ -25,6 +31,36 @@ fn do_demos() {
         println!();
         demo_face_translation();
     }
+}
+
+fn arc_demo() {
+    let module:f64 = 2.0;
+    let num_teeth:f64 = 10 as f64;
+    let pressure_angle_degrees:f64 = 20.0;
+    let profile_shift:f64 = 0.4;
+    let params:GearParams =
+        GearParams{module, num_teeth, pressure_angle_degrees, profile_shift};
+    let gear: Gear = Gear{params};
+    let face: ToothFace = gear.tooth_face(20);
+
+    let gcodes = arc_interpolate::get_tooth_face_gcode(&face);
+    for line in gcodes {
+        println!("{}", line);
+    }
+
+    let mut dt:raqote::DrawTarget = raqote::DrawTarget::new(400, 400);
+    canvas::draw_arc(&mut dt);
+    dt.write_png("test.png").unwrap();
+}
+
+fn demo_circle_from_points() {
+    println!("{:?}", geometry::circle_from_points(&Point{x:5.0, y:0.0},
+                                                  &Point{x:0.0, y:5.0},
+                                                  &Point{x:3.0, y:4.0}));
+    
+    println!("{:?}", geometry::circle_from_points(&Point{x:2.5, y:0.0},
+                                                  &Point{x:1.5, y:2.0},
+                                                  &Point{x:0.0, y:2.5}));
 }
 
 fn gear_catalog() {
