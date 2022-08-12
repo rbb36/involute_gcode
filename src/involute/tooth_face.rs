@@ -1,4 +1,4 @@
-use crate::geometry::{Point};
+use crate::geometry::Point;
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -55,19 +55,6 @@ impl ToothFace {
         for index in 0..self.points.len() {
             let point: &Point = self.points.get(index).unwrap();
             println!("{}\t{}", point.x, point.y);
-        }
-    }
-    pub fn print_gcode(&self) {
-        for point in &self.points {
-            println!("G1 X{:.3} Y{:.3}", point.x, point.y);
-        }
-    }
-    pub fn print_gcode_with_slope(&self, prev_z:f64, face_dz:f64) {
-        let dz = face_dz / ((self.points.len() as f64) - 1.0);
-        for i in 0..self.points.len() {
-            let point = self.points.get(i).unwrap();
-            let z = prev_z + ((i as f64) * dz);
-            println!("G1 X{:.3} Y{:.3} Z{:.3}", point.x, point.y, z);
         }
     }
 }

@@ -210,7 +210,7 @@ impl LinearInterpolatedGear {
             let next_face = offset_faces.get(next_face_i).unwrap();
             let subs_face = offset_faces.get(subs_face_i).unwrap();
             // print this face G-code with slope.
-            this_face.print_gcode_with_slope(prev_z, face_dz);
+            print_gcode_with_slope_for_toothface(this_face, prev_z, face_dz);
             prev_z += face_dz;
             // print tip line to next face.
             if prev_z < tab_z {
@@ -221,7 +221,7 @@ impl LinearInterpolatedGear {
                 println!("G1 Z{:0.3}", prev_z);
             }
             // print next face.
-            next_face.print_gcode_with_slope(prev_z, face_dz);
+            print_gcode_with_slope_for_toothface(next_face, prev_z, face_dz);
             prev_z += face_dz;
             // print arc to subsequent face.
             let arc_0 = next_face.last();
@@ -340,4 +340,17 @@ pub fn mill_offset_tooth_face(face: &ToothFace,
         points.push(intersect)
     }
     ToothFace{points}
+}
+pub fn print_gcode_for_toothface(face:&ToothFace) {
+    for point in &face.points {
+        println!("G1 X{:.3} Y{:.3}", point.x, point.y);
+    }
+}
+pub fn print_gcode_with_slope_for_toothface(face:&ToothFace, prev_z:f64, face_dz:f64) {
+    let dz = face_dz / ((face.points.len() as f64) - 1.0);
+    for i in 0..face.points.len() {
+        let point = face.points.get(i).unwrap();
+        let z = prev_z + ((i as f64) * dz);
+        println!("G1 X{:.3} Y{:.3} Z{:.3}", point.x, point.y, z);
+    }
 }
