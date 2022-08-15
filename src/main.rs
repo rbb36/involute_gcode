@@ -1,8 +1,9 @@
 use std::f64::consts::PI;
 
 use involute_gcode::{
+    gcode,
     geometry,
-    geometry::{Point}, //, Line},
+    geometry::{Arc, Point}, //, Line},
     involute::arc_interpolate,
     involute::gear::Gear,
     involute::gear_params::GearParams,
@@ -43,14 +44,26 @@ fn arc_demo() {
     let gear: Gear = Gear{params};
     let face: ToothFace = gear.tooth_face(20);
 
-    let gcodes = arc_interpolate::get_tooth_face_gcode(&face);
-    for line in gcodes {
-        println!("{}", line);
+    let arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&face);
+    for arc in &arcs {
+        // println!("{:?}", arc);
+        println!("{:?}", gcode::get_gcode_for_arc(&arc));
     }
+    let mut dt:raqote::DrawTarget = raqote::DrawTarget::new(1000, 1000);
+    let offset:Point = Point{x:-8.0, y:1.0};
+    let scale:f64 = 100.0;
+    canvas::draw_arcs(&mut dt, &arcs, &offset, scale);
+    // canvas::draw_arc(&mut dt);
+    dt.write_png("draw_arcs.png").unwrap();
 
-    let mut dt:raqote::DrawTarget = raqote::DrawTarget::new(400, 400);
-    canvas::draw_arc(&mut dt);
-    dt.write_png("test.png").unwrap();
+    // let gcodes = arc_interpolate::get_tooth_face_gcode(&face);
+    // for line in gcodes {
+    //     println!("{}", line);
+    // }
+
+    // let mut dt:raqote::DrawTarget = raqote::DrawTarget::new(400, 400);
+    // canvas::draw_arc(&mut dt);
+    // dt.write_png("test.png").unwrap();
 }
 
 fn demo_circle_from_points() {

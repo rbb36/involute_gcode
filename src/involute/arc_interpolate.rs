@@ -2,6 +2,21 @@ use crate::geometry;
 use crate::geometry::{Arc, Circle, Point};
 use crate::involute::tooth_face::ToothFace;
 
+pub fn get_tooth_face_arcs(face:&ToothFace) -> Vec<Arc> {
+    let mut arcs:Vec<Arc> = Vec::new();
+
+    for i in 0..(face.points.len() / 2) {
+        let p1:&Point = face.points.get(i * 2).unwrap();
+        let p2:&Point = face.points.get(i * 2 + 1).unwrap();
+        let p3:&Point = face.points.get(i * 2 + 2).unwrap();
+        let circ:Circle = geometry::circle_from_points(p1, p2, p3);
+        let arc:Arc = Arc{circle:circ.copy(), start:p1.copy(), end:p3.copy()};
+        arcs.push(arc);
+    }
+
+    arcs
+}
+
 pub fn get_tooth_face_gcode(face:&ToothFace) -> Vec<String> {
     let mut gcodes:Vec<String> = Vec::new();
 

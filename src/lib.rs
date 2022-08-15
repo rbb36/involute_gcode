@@ -1,4 +1,5 @@
 pub mod canvas;
+pub mod gcode;
 pub mod geometry;
 pub mod involute;
 pub mod linear_interpolated_demo;
