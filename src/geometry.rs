@@ -7,26 +7,41 @@ pub const PRECISION: f64 = 1_000_000.0;
 #[derive(Debug)]
 pub struct Arc {
     pub circle: Circle,
-    pub start: Point,
-    pub end: Point,
+    pub start_angle: f64,
+    pub included_angle: f64,
 }
 
 impl Arc {
-    // angle in radians
-    pub fn start_angle(&self) -> f64 {
-        self.circle.center.angle_to(&self.start)
+    pub fn start(&self) -> Point {
+        self.circle.center.translate(self.start_angle,
+                                     self.circle.radius)
     }
-    // angle in radians
-    pub fn included_angle(&self) -> f64 {
-        self.circle.center.angle_to(&self.end) - self.start_angle()
+    pub fn end(&self) -> Point {
+        self.circle.center.translate(self.start_angle + self.included_angle,
+                                     self.circle.radius)
     }
+    // // angle in radians
+    // pub fn start_angle(&self) -> f64 {
+    //     self.circle.center.angle_to(&self.start)
+    // }
+    // // angle in radians
+    // pub fn included_angle(&self) -> f64 {
+    //     self.circle.center.angle_to(&self.end) - self.start_angle()
+    // }
     // center x offset from starting point x
     pub fn gcode_i(&self) -> f64 {
-        self.circle.center.x - self.start.x
+        self.circle.center.x - self.start().x
     }
     // center y offset from starting point y
     pub fn gcode_j(&self) -> f64 {
-        self.circle.center.y - self.start.y
+        self.circle.center.y - self.start().y
+    }
+    pub fn gcode_g(&self) -> &str {
+        if self.included_angle > 0.0 {
+            "G3"
+        } else {
+            "G2"
+        }
     }
 }
 
