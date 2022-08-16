@@ -3,7 +3,7 @@ use std::f64::consts::PI;
 use involute_gcode::{
     gcode,
     geometry,
-    geometry::{Arc, Point}, //, Line},
+    geometry::{Arc, Circle, Line, Point}, //, Line},
     involute::arc_interpolate,
     involute::gear::Gear,
     involute::gear_params::GearParams,
@@ -42,7 +42,7 @@ fn eight_tooth() {
     let height = 1000 as i32;
     
     let offset:Point = Point{x:0.0, y:0.0};
-    let scale:f64 = 10.0;
+    let scale:f64 = 8.0;
 
     let module:f64 = 2.25;
     let num_teeth:f64 = 40 as f64;
@@ -60,18 +60,73 @@ fn eight_tooth() {
     let mut dt:raqote::DrawTarget = raqote::DrawTarget::new(width, height);
     canvas::white(&mut dt, width, height);
 
-    draw(&first_face, &second_face, line_width,
-         &mut dt, width, height, &offset, scale);
+    drill(&first_face, &second_face, line_width,
+          &mut dt, width, height, &offset, scale);
+
+    face_and_root(&first_face, &second_face, line_width,
+                  &mut dt, width, height, &offset, scale);
+    
+    dt.write_png("draw_arcs.png").unwrap();
 }
 
-fn draw(first_face:&ToothFace,
-        second_face:&ToothFace,
-        line_width:f64,
-        dt:&mut raqote::DrawTarget,
-        width:i32,
-        height:i32,
-        offset:&Point,
-        scale:f64) {
+fn drill(first_face:&ToothFace,
+         second_face:&ToothFace,
+         line_width:f64,
+         dt:&mut raqote::DrawTarget,
+         width:i32,
+         height:i32,
+         offset:&Point,
+         scale:f64) {
+    let first_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&first_face);
+    let second_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&second_face);
+    let first_arc = first_arcs.get(0).unwrap();
+    let last_arc = second_arcs.get(second_arcs.len() - 1).unwrap();
+    let first_radial:Line = Line{p1:first_arc.circle.center.copy(),
+                                 p2:first_arc.start()};
+    let first_radial_angle = first_radial.angle();
+    let first_radius:f64 = first_arc.circle.radius;
+    let last_radial:Line = Line{p1:last_arc.circle.center.copy(),
+                                p2:last_arc.end()};
+    let last_radial_angle = last_radial.angle();
+    let last_radius:f64 = last_arc.circle.radius;
+    let center = first_radial.intersect(last_radial);
+    println!("Outer Drill: {:?}",center);
+    let white:bool = false;
+    let val:u32 = 0;
+    let index:u32 = 0;
+    let radius:f64 = 3.35;
+    let start_angle:f64 = 0.0;
+    let included_angle:f64 = 2.0 * PI;
+    let circle:Circle = Circle{center, radius};
+    let arc:Arc = Arc{circle, start_angle, included_angle};
+    canvas::draw_arc(dt, &arc, offset, scale, line_width,
+                     width, height, white, val, index);
+
+    let first_distance = first_radius + radius + 0.05;
+    let center = first_arc.circle.center
+        .translate(first_radial_angle, first_distance);
+    let circle:Circle = Circle{center, radius};
+    let arc:Arc = Arc{circle, start_angle, included_angle};
+    canvas::draw_arc(dt, &arc, offset, scale, line_width,
+                     width, height, white, val, index);
+
+    let last_distance = last_radius + radius + 0.05;
+    let center = last_arc.circle.center
+        .translate(last_radial_angle, last_distance);
+    let circle:Circle = Circle{center, radius};
+    let arc:Arc = Arc{circle, start_angle, included_angle};
+    canvas::draw_arc(dt, &arc, offset, scale, line_width,
+                     width, height, white, val, index);
+}
+
+fn face_and_root(first_face:&ToothFace,
+                 second_face:&ToothFace,
+                 line_width:f64,
+                 dt:&mut raqote::DrawTarget,
+                 width:i32,
+                 height:i32,
+                 offset:&Point,
+                 scale:f64) {
     let root_arc:Arc = first_face.root_arc_to(&second_face);
     let root_arcs:Vec<Arc> = vec![root_arc];//Vec{root_arc};
     
@@ -92,8 +147,6 @@ fn draw(first_face:&ToothFace,
         println!("{:?}", gcode::get_gcode_for_arc(&arc));
     }
     canvas::draw_arcs(dt, &arcs, &offset, scale, line_width, width, height);
-
-    dt.write_png("draw_arcs.png").unwrap();
 }
 
 fn arc_demo() {

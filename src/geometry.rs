@@ -20,14 +20,6 @@ impl Arc {
         self.circle.center.translate(self.start_angle + self.included_angle,
                                      self.circle.radius)
     }
-    // // angle in radians
-    // pub fn start_angle(&self) -> f64 {
-    //     self.circle.center.angle_to(&self.start)
-    // }
-    // // angle in radians
-    // pub fn included_angle(&self) -> f64 {
-    //     self.circle.center.angle_to(&self.end) - self.start_angle()
-    // }
     // center x offset from starting point x
     pub fn gcode_i(&self) -> f64 {
         self.circle.center.x - self.start().x
@@ -127,6 +119,9 @@ pub struct Line {
     pub p2: Point,
 }
 impl Line {
+    pub fn angle(&self) -> f64 {
+        self.p1.angle_to(&self.p2)
+    }
     // returns the smaller included angle, on the range -PI to PI,
     // from self to other about their common point.
     // 

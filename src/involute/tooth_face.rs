@@ -75,7 +75,8 @@ impl ToothFace {
                  cx, cy, center, radius);
         let start_angle = center.angle_to(&start);
         let end_angle = center.angle_to(&end);
-        let included_angle = -1.0 * (end_angle - start_angle);
+        let included_angle = start_angle - end_angle;//end_angle - start_angle; // start_angle - end_angle;
+        // -1.0 * (end_angle - start_angle);
         println!("sa{:.3}, ea{:.3}, ia{:.3}", start_angle, end_angle, included_angle);
         let circle:Circle = Circle{center, radius};
         Arc{circle, start_angle, included_angle}
