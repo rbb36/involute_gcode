@@ -1,0 +1,14 @@
+;; begin polar translation
+G68 R#R X0 Y0 ; polar translation #R degrees about 0,0
+;; begin depth loop
+;; for depth in depths:
+G5 "polar_mill_depth.txt" Z-0.5 D#D A#A
+G5 "polar_mill_depth.txt" Z-1.0 D#D A#A
+G5 "polar_mill_depth.txt" Z-1.5 D#D A#A
+G5 "polar_mill_depth.txt" Z-2.0 D#D A#A
+G5 "polar_mill_depth.txt" Z-2.5 D#D A#A
+G5 "polar_mill_depth.txt" Z-3.0 D#D A#A
+G0 Z1 ; rapid position to 1mm above surface
+;; end depth loop
+;; end polar loop
+G69 ; end polar translation

@@ -1,0 +1,98 @@
+;; ------------------
+;; 6.7mm drill
+;; ------------------
+G68 R0 X0 Y0
+;; radial outer cw drill
+G0 Z10
+G0 X14.692 Y0.225
+;; radial outer ccw drill
+G0 Z10
+G0 X13.703 Y-5.302
+G69
+
+G68 R45 X0 Y0
+;; radial outer cw drill
+G0 Z10
+G0 X14.692 Y0.225
+;; radial outer ccw drill
+G0 Z10
+G0 X13.703 Y-5.302
+G69
+
+;; ------------------
+;; 3.0mm drill
+;; ------------------
+G68 R0 X0 Y0
+;; root drill center
+G0 Z10
+G0 X8.589 Y-1.536
+;; root next drill center
+G0 Z10
+G0 X10.804 Y-1.932
+G69
+
+G68 R45 X0 Y0
+;; root drill center
+G0 Z10
+G0 X8.589 Y-1.536
+;; root next drill center
+G0 Z10
+G0 X10.804 Y-1.932
+G69
+
+
+G90 ; absolute positioning
+G01 X3.00 Y1.50 Z.5 ; G01 mode before canned cycle
+G98 ; Set for initial point return
+G10 P73 R.1 ; Sets the retract amount to .1
+G73 X3.250 Y1.75 Z-.650 R.1 Q0.325 F3 ; Peck drill at X3.25 Y1.75
+X4.5 Y3.5 ; Peck drill at X4.5 Y3.5
+G80 ; Cancel canned cycle, return
+
+
+
+;; ------------------------
+;; 6.0mm, 4.0mm, 3.0mm mill
+;; ------------------------
+
+G0 Z10
+;; radial outer cw drill
+G0 X14.692 Y0.225
+G0 Z1
+G1 Z-0.1
+
+
+;; begin polar loop
+;; for polar angle in polar angles:
+G68 R45 X0 Y0 ; polar translation 45 degrees about 0,0
+;; begin depth loop
+;; for depth in depths:
+G91 G1 Z-0.1 ; relative, feedrate move to Z-0.1
+G90 ; return to absolute positioning
+;; begin subroutine
+;; begin offset
+G42 D6 ; turn on cutter compensation, set diameter to 3
+G1 X11.944 Y2.228
+G2 X11.017 Y1.178 I-6.051 J4.410
+G2 X10.157 Y0.510 I-3.991 J4.246
+G2 X9.465 Y0.154 I-2.245 J3.514
+G2 X9.018 Y0.019 I-0.944 J2.333
+G2 X8.863 Y0.000 I-0.193 J0.915
+G3 X8.314 Y-3.071 I-0.275 J-1.536
+G2 X8.452 Y-3.143 I-0.360 J-0.863
+G2 X8.825 Y-3.424 I-1.321 J-2.142
+G2 X9.351 Y-3.997 I-2.797 J-3.092
+G2 X9.926 Y-4.923 I-4.640 J-3.525
+G2 X10.432 Y-6.229 I-6.698 J-3.346
+;; end offset
+G40 ; turn off cutter compensation
+
+;; radial outer ccw drill
+G1 X13.703 Y-5.302
+;; radial outer cw drill
+G1 X14.692 Y0.225 ; this could be G0 after the 6mm
+;; end subroutine
+;; end depth loop
+;; end polar loop
+G69 ; end polar translation
+

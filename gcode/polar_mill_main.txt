@@ -1,0 +1,24 @@
+; Set D76 to 6.1 mm
+F50
+G0 Z10
+;; radial outer cw drill
+G0 X14.692 Y0.225
+G0 Z1
+G1 Z0
+
+;; begin polar loop
+;; for polar angle in polar angles:
+G17 ; set polar instructions to XY plane
+;; cannot use G, L, N, O, or P for args
+;; R: rotation in degrees
+;; D: D Code for tool diameter
+;; A: Feed (1) or Traverse (0) between tooth tips
+G65 "polar_mill_polar.txt" R000 D76 A1
+G65 "polar_mill_polar.txt" R045 D76 A1
+G65 "polar_mill_polar.txt" R090 D76 A1
+G65 "polar_mill_polar.txt" R135 D76 A1
+G65 "polar_mill_polar.txt" R180 D76 A1
+G65 "polar_mill_polar.txt" R225 D76 A1
+G65 "polar_mill_polar.txt" R270 D76 A1
+G65 "polar_mill_polar.txt" R315 D76 A1
+G65 "polar_mill_polar.txt" R360 D76 A1

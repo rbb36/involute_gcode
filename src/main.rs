@@ -13,6 +13,8 @@ use involute_gcode::{
 
 use involute_gcode::linear_interpolated_demo;
 
+const CENTER:Point = Point{x:0.0, y:0.0};
+
 fn main() {
     do_demos();
 }
@@ -47,7 +49,7 @@ fn eight_tooth() {
     let module:f64 = 2.25;
     let num_teeth:f64 = 40 as f64;
     let pressure_angle_degrees:f64 = 10.0;
-    let profile_shift:f64 = 0.4;
+    let profile_shift:f64 = 0.0;
     let params:GearParams =
         GearParams{module, num_teeth, pressure_angle_degrees, profile_shift};
     let gear: Gear = Gear{params};
@@ -79,6 +81,8 @@ fn drill(first_face:&ToothFace,
          scale:f64) {
     let first_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&first_face);
     let second_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&second_face);
+    
+    // outer drill
     let first_arc = first_arcs.get(0).unwrap();
     let last_arc = second_arcs.get(second_arcs.len() - 1).unwrap();
     let first_radial:Line = Line{p1:first_arc.circle.center.copy(),
@@ -94,28 +98,64 @@ fn drill(first_face:&ToothFace,
     let white:bool = false;
     let val:u32 = 0;
     let index:u32 = 0;
-    let radius:f64 = 3.35;
+    let radius:f64 = 1.5;
     let start_angle:f64 = 0.0;
     let included_angle:f64 = 2.0 * PI;
     let circle:Circle = Circle{center, radius};
     let arc:Arc = Arc{circle, start_angle, included_angle};
+    println!(";; radial outer drill");
+    println!("G0 Z10");
+    println!("G0 X{:.3} Y{:.3}", arc.circle.center.x, arc.circle.center.y);
     canvas::draw_arc(dt, &arc, offset, scale, line_width,
                      width, height, white, val, index);
 
+    let additional_offset:f64 = 0.25 * radius;
     let first_distance = first_radius + radius + 0.05;
     let center = first_arc.circle.center
         .translate(first_radial_angle, first_distance);
+    let angle = CENTER.angle_to(&center);
+    let center = center.translate(angle, additional_offset);
     let circle:Circle = Circle{center, radius};
     let arc:Arc = Arc{circle, start_angle, included_angle};
+    println!(";; radial outer cw drill");
+    println!("G0 Z10");
+    println!("G0 X{:.3} Y{:.3}", arc.circle.center.x, arc.circle.center.y);
     canvas::draw_arc(dt, &arc, offset, scale, line_width,
                      width, height, white, val, index);
 
     let last_distance = last_radius + radius + 0.05;
     let center = last_arc.circle.center
         .translate(last_radial_angle, last_distance);
+    let angle = CENTER.angle_to(&center);
+    let center = center.translate(angle, additional_offset);
     let circle:Circle = Circle{center, radius};
     let arc:Arc = Arc{circle, start_angle, included_angle};
+    println!(";; radial outer ccw drill");
+    println!("G0 Z10");
+    println!("G0 X{:.3} Y{:.3}", arc.circle.center.x, arc.circle.center.y);
     canvas::draw_arc(dt, &arc, offset, scale, line_width,
+                     width, height, white, val, index);
+
+    // inner drill
+    let radius:f64 = 1.5;
+    let root_arc:Arc = first_face.root_arc_to(&second_face);
+    let root_arc:Arc = Arc{circle:root_arc.circle.copy(),
+                           start_angle, included_angle};
+    let root_center = root_arc.circle.center.copy();
+    let root_angle = CENTER.angle_to(&root_center);
+    let next_center = root_center.translate(root_angle, radius * 1.5);
+    let next_circle = Circle{center:next_center, radius};
+    let next_arc = Arc{circle:next_circle, start_angle, included_angle};
+
+    println!(";; root drill center");
+    println!("G0 Z10");
+    println!("G0 X{:.3} Y{:.3}", root_center.x, root_center.y);
+    canvas::draw_arc(dt, &root_arc, offset, scale, line_width,
+                     width, height, white, val, index);
+    println!(";; root next drill center");
+    println!("G0 Z10");
+    println!("G0 X{:.3} Y{:.3}", next_arc.circle.center.x, next_arc.circle.center.y);
+    canvas::draw_arc(dt, &next_arc, offset, scale, line_width,
                      width, height, white, val, index);
 }
 
