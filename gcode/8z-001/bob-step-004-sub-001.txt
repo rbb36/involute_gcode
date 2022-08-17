@@ -1,0 +1,31 @@
+;; ------------------------------
+;; 8 tooth gear, 6mm tooth face milling
+;; Bob Bushman
+;; ------------------------------
+;; Calls to Depth Subroutine
+;; ------------------------------
+;; Setup:
+;; Mount a 6mm carbide tialn end mill.
+;; Set D76 to 6.1 mm
+;; zero X, Y to center of gear
+;; zero Z to mill
+;; ------------------------------
+;; Notes
+;; ------------------------------
+;; 
+;; ------------------------------
+;; begin polar translation
+G68 R#R X0 Y0 ; polar translation #R degrees about 0,0
+;; begin depth loop
+;; for depth in depths:
+G65 "bob-step-004-sub-002.txt" Z-0.5 D#D A#A
+G65 "bob-step-004-sub-002.txt" Z-1.0 D#D A#A
+G65 "bob-step-004-sub-002.txt" Z-1.5 D#D A#A
+G65 "bob-step-004-sub-002.txt" Z-2.0 D#D A#A
+G65 "bob-step-004-sub-002.txt" Z-2.5 D#D A#A
+;; disabled while I think through tabs
+; G65 "bob-step-004-sub-002.txt" Z-3.0 D#D A#A
+G0 Z5 ; rapid position to 5mm above surface
+;; end depth loop
+;; end polar loop
+G69 ; end polar translation

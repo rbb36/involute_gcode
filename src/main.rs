@@ -47,12 +47,15 @@ fn eight_tooth() {
     let scale:f64 = 8.0;
 
     let module:f64 = 2.25;
-    let num_teeth:f64 = 40 as f64;
+    let num_teeth:f64 = 8 as f64;
     let pressure_angle_degrees:f64 = 10.0;
-    let profile_shift:f64 = 0.0;
+    let profile_shift:f64 = 0.4;
     let params:GearParams =
         GearParams{module, num_teeth, pressure_angle_degrees, profile_shift};
+    params.print_params();
+    
     let gear: Gear = Gear{params};
+
     let first_face: ToothFace = gear.tooth_face(10).reverse_order();
     let angle = gear.params.base_thickness() - (2.0 * PI / num_teeth);
     let second_face: ToothFace = first_face
@@ -159,6 +162,16 @@ fn drill(first_face:&ToothFace,
                      width, height, white, val, index);
 }
 
+fn print_arc(arc:&Arc) {
+    println!("{:.3} {:.3} {:.3} {:.3} {:.3}",
+             arc.circle.center.x,
+             arc.circle.center.y,
+             arc.circle.radius,
+             (arc.start_angle * 180.0/PI),
+             ((arc.start_angle + arc.included_angle) * 180.0/PI)
+    );
+}
+
 fn face_and_root(first_face:&ToothFace,
                  second_face:&ToothFace,
                  line_width:f64,
@@ -174,6 +187,7 @@ fn face_and_root(first_face:&ToothFace,
     let arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&first_face);
     for arc in &arcs {
         println!("{:?}", gcode::get_gcode_for_arc(&arc));
+        print_arc(&arc);
     }
     canvas::draw_arcs(dt, &arcs, &offset, scale, line_width, width, height);
 

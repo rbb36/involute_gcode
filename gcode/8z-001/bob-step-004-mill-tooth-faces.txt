@@ -12,18 +12,24 @@
 ;; ------------------------------
 ;; Notes
 ;; ------------------------------
-;; 
+;; Offset lookahead is insufficient, resulting in an
+;; overlapping cut path.
+;; 1) F3 - Config
+;; 2) F3 - Parms
+;; 3) Parameter 99 - Cutter Compensation Look-Ahead
+;; -- default is 1 max is 99, I need at least 12.
+;; -- I recommend 30. Look-ahead steps has no
+;; -- effect unless cutter compensation (G40 - G42)
+;; -- is in use.
 ;; ------------------------------
 G90 ; absolute positioning
 G21 ; metric units
 F10 ; 10mm/minute is safe, in case not set below
 
-F50
 G0 Z10
 ;; radial outer cw drill
 G0 X14.692 Y0.225
-G0 Z1
-G1 Z0
+G0 Z5
 
 ;; begin polar loop
 ;; for polar angle in polar angles:
@@ -32,12 +38,11 @@ G17 ; set polar instructions to XY plane
 ;; R: rotation in degrees
 ;; D: D Code for tool diameter
 ;; A: Feed (1) or Traverse (0) between tooth tips
-G65 "polar_mill_polar.txt" R000 D76 A1
-G65 "polar_mill_polar.txt" R045 D76 A1
-G65 "polar_mill_polar.txt" R090 D76 A1
-G65 "polar_mill_polar.txt" R135 D76 A1
-G65 "polar_mill_polar.txt" R180 D76 A1
-G65 "polar_mill_polar.txt" R225 D76 A1
-G65 "polar_mill_polar.txt" R270 D76 A1
-G65 "polar_mill_polar.txt" R315 D76 A1
-G65 "polar_mill_polar.txt" R360 D76 A1
+G65 "bob-step-004-sub-001.txt" R000 D76 A1
+G65 "bob-step-004-sub-001.txt" R045 D76 A1
+G65 "bob-step-004-sub-001.txt" R090 D76 A1
+G65 "bob-step-004-sub-001.txt" R135 D76 A1
+G65 "bob-step-004-sub-001.txt" R180 D76 A1
+G65 "bob-step-004-sub-001.txt" R225 D76 A1
+G65 "bob-step-004-sub-001.txt" R270 D76 A1
+G65 "bob-step-004-sub-001.txt" R315 D76 A1

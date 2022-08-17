@@ -1,0 +1,44 @@
+;; ------------------------------------------------------------
+;; Testing work envelope
+;; ------------------------------------------------------------
+;; Setup
+;; Mount nothing
+;; zero X, Y, Z to the middle of the air
+;; ------------------------------------------------------------
+;; Notes
+;; ------------------------------------------------------------
+;; Failed to get an error message using the script as below.
+;; Changed the envelope to X5 Y5 Z1, still no error.
+;; ------------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+
+;; work envelope setting needs learnin'
+G0 X0 Y0 Z0
+G22 X50 Y50 Z10 I-50 J-50 K-10 ; work envelope 100mm x 100mm x 20mm about origin
+
+; all in bounds
+G0 X49 Y49 Z9
+G0 X49 Y-49 Z9
+G0 X-49 Y-49 Z9
+G0 X-49 Y49 Z9
+G0 X49 Y49 Z-9
+G0 X49 Y-49 Z-9
+G0 X-49 Y-49 Z-9
+G0 X-49 Y49 Z-9
+
+; DC Al Center
+G0 X0 Y0 Z0
+
+; all out of bounds
+G0 X51 Y0 Z0
+
+G0 X-51 Y0 Z0
+
+G0 X0 Y51 Z0
+
+G0 X0 Y-51 Z0
+
+G0 X0 Y0 Z11
+
+G0 X0 Y0 Z-11

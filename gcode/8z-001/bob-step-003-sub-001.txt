@@ -1,0 +1,30 @@
+;; ------------------------------
+;; 8 tooth gear, 6.7mm drill
+;; Bob Bushman
+;; ------------------------------
+;; Peck Drilling Subroutine
+;; ------------------------------
+;; Setup
+;; Mount a 6.7mm drill.
+;; zero Z to shoulder of drill
+;; zero X, Y to center of gear
+;; ------------------------------
+;; Notes
+;; ------------------------------
+;; 
+;; ------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; 10mm/minute is safe, in case not set below
+
+;; radial outer cw drill: X14.692 Y0.225
+;; radial outer ccw drill: X13.703 Y-5.302
+G0 Z10
+G0 X14.692 Y0.225
+G0 Z5 ; 5mm above surface
+
+G98 ; set for initial point return
+G10 P73 R.5 ; set retract to 0.5mm
+G73 X14.692 Y0.225 Z-3 R.5 Q1 F25
+X13.703 Y-5.302 ; peck at second position
+G80 ; end peck drilling, return to G98 position

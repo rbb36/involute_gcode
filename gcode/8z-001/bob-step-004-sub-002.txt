@@ -1,0 +1,62 @@
+;; ------------------------------------------------
+;; 8 tooth gear, 6mm tooth face milling
+;; Bob Bushman
+;; ------------------------------------------------
+;; Tooth Face Milling
+;; ------------------------------------------------
+;; Input Args
+;; ------------------------------------------------
+;; Z: Z Level of Cut
+;; D: D Code of the library tool diameter
+;; A: Feed (1) or Traverse (0) from tooth tip to tip
+;; ------------------------------------------------
+F50
+;; begin subroutine
+G0 X14.692 Y0.225 ; should already be here, but can't hurt
+G1 Z#Z ; feedrate to target depth
+;; begin offset
+G41 D#D ; turn on cutter left compensation, set diameter to D#D
+G1 X11.944 Y2.228
+G2 X11.017 Y1.178 I-6.051 J4.410
+G2 X10.157 Y0.510 I-3.991 J4.246
+G2 X9.465 Y0.154 I-2.245 J3.514
+G2 X9.018 Y0.019 I-0.944 J2.333
+G2 X8.863 Y0.000 I-0.193 J0.915
+G3 X8.314 Y-3.071 I-0.275 J-1.536
+G2 X8.452 Y-3.143 I-0.360 J-0.863
+G2 X8.825 Y-3.424 I-1.321 J-2.142
+G2 X9.351 Y-3.997 I-2.797 J-3.092
+G2 X9.926 Y-4.923 I-4.640 J-3.525
+G2 X10.432 Y-6.229 I-6.698 J-3.346
+;; end offset
+G40 ; turn off cutter compensation
+
+;; radial outer ccw drill
+G1 X13.703 Y-5.302 ; exit cut to bore hole
+;; radial outer cw drill
+G#A X14.692 Y0.225 ; move to other bore hole
+;; end subroutine
+
+
+center: x: 5.8931322615312345, y: 6.637676373918385
+radius: 7.487229578722823
+start_angle: -0.6297810433899113
+included_angle: -0.1873339063965168
+end_angle: -0.817114949786427
+
+Arc { circle: Circle { center: Point { x: 7.0258991010092, y: 5.424409928061315 }, radius: 5.827364353396035 }, start_angle: -0.8163792553772377, included_angle: -0.1872068550650744 }
+Arc { circle: Circle { center: Point { x: 7.9121129961096, y: 4.023093018349369 }, radius: 4.169346743164499 }, start_angle: -1.0022751902461957, included_angle: -0.18689596485207605 }
+Arc { circle: Circle { center: Point { x: 8.52050765286813, y: 2.487017403185839 }, radius: 2.5172025711691646 }, start_angle: -1.1862105902507554, included_angle: -0.18574123677442556 }
+Arc { circle: Circle { center: Point { x: 8.824304641349496, y: 0.9342954004568991 }, radius: 0.9351075751589925 }, start_angle: -1.3624246372902995, included_angle: -0.16669047378965773 }
+
+5.893, 6.638 7.487 -0.630r -0.817r
+7.026, 5.424 5.827 -0.816 -1.004
+7.912, 4.023 4.169 -1.002 -1.189
+8.521, 2.487 2.517 -1.186 -1.372
+8.824, 0.934 0.935 -1.362 -1.529
+
+5.893, 6.638 7.487 -46.817 -36.084
+7.026, 5.424 5.827 -57.501 -46.775
+7.912, 4.023 4.169 -68.134 -57.426
+8.521, 2.487 2.517 -78.607 -67.965
+8.824, 0.934 0.935 -87.612 -78.061
