@@ -1,0 +1,21 @@
+;; ---------------------------------------------------------
+;; 8 tooth gear, drilling subroutine for large position only
+;; Bob Bushman
+;; ---------------------------------------------------------
+;; Parameters
+;; Z: depth
+;;
+;; assumes 6.7mm dia carbide drill, 3000 RPM
+;; ---------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; 10mm/minute is safe, in case not set below
+
+G0 Z10
+G0 X0 Y0
+G0 Z8 ; 8mm above surface (allow for tip length)
+
+G98 ; set for initial point return
+G10 P73 R.5 ; set retract to 0.5mm
+G73 X12.283 Y-2.197 Z#Z R.5 Q1 F25 ; 6.7mm
+G80 ; end peck drilling, return to G98 position

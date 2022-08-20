@@ -1,0 +1,50 @@
+;; -------------------------------------------------------------
+;; 8 tooth gear, keep tabs while milling tooth faces subroutine
+;; Bob Bushman
+;; -------------------------------------------------------------
+;; Parameters
+;; D: mill diameter entry in tool table
+;; Z: depth
+;; 
+;; recommend 3mm cutter
+;; recommend 3.1mm diameter setting for rough cut
+;; recommend 3mm for finish cut
+;; recommend 2 flute for HSL mill (it maxes out at 3,000 rpm)
+;; -------------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; safe default feed speed if not specified
+
+; roughly 16mm total length of cut
+F30
+; keep tabs lead-in
+G0 Z5
+G0 X14.903 Y1.135
+G0 Z1
+; keep tabs lead-in
+G1 X14.903 Y1.135
+G1 Z#Z
+X13.860 Y0.958
+; keep tabs begin offset
+G41 D#D
+G1 X13.517 Y2.522
+G1 X11.944 Y2.228 ; (should match start of face)
+; face 1
+G2 X11.017 Y1.178 I-6.051 J4.410
+G2 X10.157 Y0.510 I-3.991 J4.246
+G2 X9.465 Y0.154 I-2.245 J3.514
+G2 X9.018 Y0.019 I-0.944 J2.333
+G2 X8.863 Y0.000 I-0.193 J0.915
+; root
+G3 X8.314 Y-3.071 I-0.275 J-1.536
+; face 2
+G2 X8.452 Y-3.143 I-0.360 J-0.863
+G2 X8.825 Y-3.424 I-1.321 J-2.142
+G2 X9.351 Y-3.997 I-2.797 J-3.092
+G2 X9.926 Y-4.923 I-4.640 J-3.525
+G2 X10.432 Y-6.229 I-6.698 J-3.346
+G1 X10.432 Y-6.229 ; (should match end of face 2)
+; move clear of tooth
+G1 X11.805 Y-7.051
+G40 ; end offset compensation
+G1 X12.669 Y-5.703

@@ -1,6 +1,8 @@
 use std::f64::consts::PI;
 
 use involute_gcode::{
+    canvas,
+    canvas::Fixer,
     gcode,
     geometry,
     geometry::{Arc, Circle, Line, Point}, //, Line},
@@ -8,12 +10,11 @@ use involute_gcode::{
     involute::gear::Gear,
     involute::gear_params::GearParams,
     involute::tooth_face::ToothFace,
-    canvas,
 };
 
 use involute_gcode::linear_interpolated_demo;
 
-const CENTER:Point = Point{x:0.0, y:0.0};
+const ORIGIN:Point = Point{x:0.0, y:0.0};
 
 fn main() {
     do_demos();
@@ -44,12 +45,12 @@ fn eight_tooth() {
     let height = 1000 as i32;
     
     let offset:Point = Point{x:0.0, y:0.0};
-    let scale:f64 = 8.0;
+    let scale:f64 = 10.0;
 
-    let module:f64 = 2.25;
-    let num_teeth:f64 = 8 as f64;
+    let module:f64 = 2.0;
+    let num_teeth:f64 = 20 as f64;
     let pressure_angle_degrees:f64 = 10.0;
-    let profile_shift:f64 = 0.4;
+    let profile_shift:f64 = 0.0;
     let params:GearParams =
         GearParams{module, num_teeth, pressure_angle_degrees, profile_shift};
     params.print_params();
@@ -68,8 +69,14 @@ fn eight_tooth() {
     drill(&first_face, &second_face, line_width,
           &mut dt, width, height, &offset, scale);
 
+    let fixer:Fixer = canvas::make_fixer(&offset, scale, width, height);
+    println!("---------- SVG ------------------");
+    let svg = canvas::get_svg(&first_face, &second_face, &fixer, num_teeth as u8);
+    println!("{}", svg);
+    println!("------ END SVG ------------------");
+
     face_and_root(&first_face, &second_face, line_width,
-                  &mut dt, width, height, &offset, scale);
+                  &mut dt, &fixer);// width, height, &offset, scale);
     
     dt.write_png("draw_arcs.png").unwrap();
 }
@@ -82,6 +89,7 @@ fn drill(first_face:&ToothFace,
          height:i32,
          offset:&Point,
          scale:f64) {
+    let fixer:Fixer = canvas::make_fixer(offset, scale, width, height);
     let first_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&first_face);
     let second_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&second_face);
     
@@ -100,7 +108,6 @@ fn drill(first_face:&ToothFace,
     println!("Outer Drill: {:?}",center);
     let white:bool = false;
     let val:u32 = 0;
-    let index:u32 = 0;
     let radius:f64 = 1.5;
     let start_angle:f64 = 0.0;
     let included_angle:f64 = 2.0 * PI;
@@ -109,35 +116,32 @@ fn drill(first_face:&ToothFace,
     println!(";; radial outer drill");
     println!("G0 Z10");
     println!("G0 X{:.3} Y{:.3}", arc.circle.center.x, arc.circle.center.y);
-    canvas::draw_arc(dt, &arc, offset, scale, line_width,
-                     width, height, white, val, index);
+    canvas::draw_arc(dt, &arc, &fixer, line_width, white, val);
 
     let additional_offset:f64 = 0.25 * radius;
     let first_distance = first_radius + radius + 0.05;
     let center = first_arc.circle.center
         .translate(first_radial_angle, first_distance);
-    let angle = CENTER.angle_to(&center);
+    let angle = ORIGIN.angle_to(&center);
     let center = center.translate(angle, additional_offset);
     let circle:Circle = Circle{center, radius};
     let arc:Arc = Arc{circle, start_angle, included_angle};
     println!(";; radial outer cw drill");
     println!("G0 Z10");
     println!("G0 X{:.3} Y{:.3}", arc.circle.center.x, arc.circle.center.y);
-    canvas::draw_arc(dt, &arc, offset, scale, line_width,
-                     width, height, white, val, index);
+    canvas::draw_arc(dt, &arc, &fixer, line_width, white, val);
 
     let last_distance = last_radius + radius + 0.05;
     let center = last_arc.circle.center
         .translate(last_radial_angle, last_distance);
-    let angle = CENTER.angle_to(&center);
+    let angle = ORIGIN.angle_to(&center);
     let center = center.translate(angle, additional_offset);
     let circle:Circle = Circle{center, radius};
     let arc:Arc = Arc{circle, start_angle, included_angle};
     println!(";; radial outer ccw drill");
     println!("G0 Z10");
     println!("G0 X{:.3} Y{:.3}", arc.circle.center.x, arc.circle.center.y);
-    canvas::draw_arc(dt, &arc, offset, scale, line_width,
-                     width, height, white, val, index);
+    canvas::draw_arc(dt, &arc, &fixer, line_width, white, val);
 
     // inner drill
     let radius:f64 = 1.5;
@@ -145,7 +149,7 @@ fn drill(first_face:&ToothFace,
     let root_arc:Arc = Arc{circle:root_arc.circle.copy(),
                            start_angle, included_angle};
     let root_center = root_arc.circle.center.copy();
-    let root_angle = CENTER.angle_to(&root_center);
+    let root_angle = ORIGIN.angle_to(&root_center);
     let next_center = root_center.translate(root_angle, radius * 1.5);
     let next_circle = Circle{center:next_center, radius};
     let next_arc = Arc{circle:next_circle, start_angle, included_angle};
@@ -153,33 +157,33 @@ fn drill(first_face:&ToothFace,
     println!(";; root drill center");
     println!("G0 Z10");
     println!("G0 X{:.3} Y{:.3}", root_center.x, root_center.y);
-    canvas::draw_arc(dt, &root_arc, offset, scale, line_width,
-                     width, height, white, val, index);
+    canvas::draw_arc(dt, &root_arc, &fixer, line_width, white, val);
     println!(";; root next drill center");
     println!("G0 Z10");
     println!("G0 X{:.3} Y{:.3}", next_arc.circle.center.x, next_arc.circle.center.y);
-    canvas::draw_arc(dt, &next_arc, offset, scale, line_width,
-                     width, height, white, val, index);
+    canvas::draw_arc(dt, &next_arc, &fixer, line_width, white, val);
 }
 
-fn print_arc(arc:&Arc) {
-    println!("{:.3} {:.3} {:.3} {:.3} {:.3}",
-             arc.circle.center.x,
-             arc.circle.center.y,
-             arc.circle.radius,
-             (arc.start_angle * 180.0/PI),
-             ((arc.start_angle + arc.included_angle) * 180.0/PI)
-    );
-}
+// fn print_arc(arc:&Arc) {
+//     println!("{:.3} {:.3} {:.3} {:.3} {:.3}",
+//              arc.circle.center.x,
+//              arc.circle.center.y,
+//              arc.circle.radius,
+//              (arc.start_angle * 180.0/PI),
+//              ((arc.start_angle + arc.included_angle) * 180.0/PI)
+//     );
+// }
 
 fn face_and_root(first_face:&ToothFace,
                  second_face:&ToothFace,
                  line_width:f64,
                  dt:&mut raqote::DrawTarget,
-                 width:i32,
-                 height:i32,
-                 offset:&Point,
-                 scale:f64) {
+                 fixer:&Fixer) {
+                 // width:i32,
+                 // height:i32,
+                 // offset:&Point,
+                 // scale:f64) {
+    
     let root_arc:Arc = first_face.root_arc_to(&second_face);
     let root_arcs:Vec<Arc> = vec![root_arc];//Vec{root_arc};
     
@@ -187,20 +191,19 @@ fn face_and_root(first_face:&ToothFace,
     let arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&first_face);
     for arc in &arcs {
         println!("{:?}", gcode::get_gcode_for_arc(&arc));
-        print_arc(&arc);
     }
-    canvas::draw_arcs(dt, &arcs, &offset, scale, line_width, width, height);
+    canvas::draw_arcs(dt, &arcs, &fixer, line_width);
 
     for arc in &root_arcs {
         println!("{:?}", gcode::get_gcode_for_arc(&arc));
     }
-    canvas::draw_arcs(dt, &root_arcs, &offset, scale, line_width, width, height);
+    canvas::draw_arcs(dt, &root_arcs, &fixer, line_width);
     
     let arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&second_face);
     for arc in &arcs {
         println!("{:?}", gcode::get_gcode_for_arc(&arc));
     }
-    canvas::draw_arcs(dt, &arcs, &offset, scale, line_width, width, height);
+    canvas::draw_arcs(dt, &arcs, &fixer, line_width);
 }
 
 fn arc_demo() {
@@ -218,17 +221,20 @@ fn arc_demo() {
         // println!("{:?}", arc);
         println!("{:?}", gcode::get_gcode_for_arc(&arc));
     }
+
     
     let mut dt:raqote::DrawTarget = raqote::DrawTarget::new(1000, 1000);
     let offset:Point = Point{x:-8.0, y:1.0};
     let scale:f64 = 200.0;
-    canvas::draw_arcs(&mut dt, &arcs, &offset, scale, 4.0, 1000, 1000);
+    let fixer:Fixer = canvas::make_fixer(&offset, scale, 1000, 1000);
+    canvas::draw_arcs(&mut dt, &arcs, &fixer, 4.0);
 
     let face: ToothFace = gear.tooth_face(4);
     let arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&face);
     let offset:Point = Point{x:-8.0, y:1.0};
     let scale:f64 = 200.0;
-    canvas::draw_arcs(&mut dt, &arcs, &offset, scale, 2.0, 1000, 1000);
+    let fixer:Fixer = canvas::make_fixer(&offset, scale, 1000, 1000);
+    canvas::draw_arcs(&mut dt, &arcs, &fixer, 2.0);
 
     dt.write_png("draw_arcs.png").unwrap();
 }

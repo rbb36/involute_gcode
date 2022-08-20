@@ -1,0 +1,22 @@
+;; ---------------------------------------------------------
+;; 8 tooth gear, drilling subroutine for all positions
+;; Bob Bushman
+;; ---------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; 10mm/minute is safe, in case not set below
+
+G0 Z10
+G0 X0 Y0
+G0 Z5 ; 5mm above surface traverse height
+
+G98 ; set current location as return point
+G10 P73 R.5 ; set retract to 0.5mm
+G73 X0 Y0 Z#Z R.5 Q1 F25 ; center
+X8.588 Y-1.536 ; root
+X12.798 Y0.739 ; ccw inner
+X14.903 Y1.135 ; ccw outer
+X11.749 Y-5.129 ; cw inner
+X13.586 Y-6.230 ; cw outer
+X12.283 Y-2.197 ; 6.7mm
+G80 ; end peck drilling, return to G98 position

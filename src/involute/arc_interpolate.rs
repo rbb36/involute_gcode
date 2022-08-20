@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::geometry;
 use crate::geometry::{Arc, Circle, Point};
 use crate::involute::tooth_face::ToothFace;
@@ -5,8 +7,22 @@ use crate::involute::tooth_face::ToothFace;
 pub fn get_arc(p1:&Point, p2:&Point, p3:&Point) -> Arc {
     let circle:Circle = geometry::circle_from_points(p1, p2, p3);
     let start_angle = circle.center.angle_to(p1);
-    let end_angle = circle.center.angle_to(p3);
+    let mut mid_angle = circle.center.angle_to(p2);
+    let mut end_angle = circle.center.angle_to(p3);
+    if mid_angle - start_angle > PI && end_angle - start_angle < mid_angle - start_angle {
+        mid_angle = mid_angle - 2.0 * PI;
+        end_angle = end_angle - 2.0 * PI;
+    } else if start_angle - mid_angle > PI && start_angle - mid_angle < start_angle - mid_angle {
+        mid_angle = 2.0 * PI + mid_angle;
+        end_angle = 2.0 * PI + end_angle;
+    }
+    if mid_angle < start_angle && end_angle > start_angle {
+        end_angle = end_angle - 2.0 * PI;
+    } else if mid_angle > start_angle && end_angle < start_angle {
+        end_angle = 2.0 * PI + end_angle;
+    }
     let included_angle = end_angle - start_angle;
+    println!("st:{:.3}, mid:{:.3}, end:{:.3}, inc:{:.3}", start_angle, mid_angle, end_angle, included_angle);
     Arc{circle, start_angle, included_angle}
 }
 
@@ -31,7 +47,7 @@ pub fn get_tooth_face_gcode(face:&ToothFace) -> Vec<String> {
     let y = face.first().y;
     gcodes.push(format!("G1 X{:.3} Y{:.3}", x, y));
     for i in 0..(face.points.len() / 2) {
-        println!("{}", (i * 2));
+        // println!("{}", (i * 2));
         let p1:&Point = face.points.get(i * 2).unwrap();
         let p2:&Point = face.points.get(i * 2 + 1).unwrap();
         let p3:&Point = face.points.get(i * 2 + 2).unwrap();

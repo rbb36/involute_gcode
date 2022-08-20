@@ -1,0 +1,46 @@
+;; -------------------------------------------------------------
+;; 8 tooth gear, cut tooth tip tabs
+;; Bob Bushman
+;; -------------------------------------------------------------
+;; Parameters
+;; D: mill diameter entry in tool table
+;; Z: depth
+;; 
+;; recommend 3mm cutter, 3000 RPM (HSL limit)
+;; recommend 3.1mm diameter setting for rough cut
+;; recommend 3mm for finish cut
+;; recommend 2 flute for HSL mill (it maxes out at 3,000 rpm)
+;; recommend z 0.5mm above bottom first, then advance at 0.1mm
+;; -------------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; safe default feed speed if not specified
+
+; roughly XXX total length of cut
+F30 ; deep cut at first
+; full cut
+G0 Z5
+G0 X14.903 Y1.135
+G0 Z1
+; full cut lead-in
+G1 X14.903 Y1.135
+G1 Z#Z
+G1 X13.860 Y0.958
+; full cut begin offset
+G41 D#D
+F10 ; next two instructions are 5mm long, full width cut
+G1 X12.012 Y4.828
+G1 X11.460 Y4.437
+F30
+G1 X11.944 Y2.228 ; (should match start of face 1)
+; Face 1 First Arc > traverse > Face 2 Last Arc (F10)
+G2 X11.017 Y1.178 I-6.051 J4.410
+G1 X9.926 Y-4.923 ; 6.2mm traverse
+G2 X10.432 Y-6.229 I-6.698 J-3.346
+G1 X10.432 Y-6.229 ; (should match end of face 2)
+F10 ; next 2 instructions are 3.9mm long, full width cut
+G1 X9.212 Y-8.134
+G1 X10.532 Y-9.039
+G40
+F30
+G1 X12.669 Y-5.703

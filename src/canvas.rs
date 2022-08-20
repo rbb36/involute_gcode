@@ -1,6 +1,10 @@
 use std::f64::consts::PI;
 
-use crate::geometry::{Arc, Point};
+use crate::{
+    geometry::{Arc, Point},
+    involute::arc_interpolate,
+    involute::tooth_face::ToothFace,
+};
 
 use raqote::{
     PathBuilder,
@@ -18,6 +22,7 @@ pub const RED:SolidSource = SolidSource {r:0xff, g:0x0, b:0x0, a:0xff};
 pub const WHITE:SolidSource = SolidSource {r:0xff, g:0xff, b:0xff, a:0xff};
 pub const BLUE:SolidSource = SolidSource {r:0x00, g:0x00, b:0xff, a:0xff};
 
+pub const ORIGIN:Point = Point{x:0.0, y:0.0};
 
 pub fn solid_stroke(width:f64) -> StrokeStyle {
     StrokeStyle {
@@ -31,7 +36,6 @@ pub struct OffsetScaler {
     pub offset: Point,
     pub scale: f64
 }
-
 impl OffsetScaler {
     // offset first, then scale
     pub fn fix(&self, point:&Point) -> Point {
@@ -55,21 +59,84 @@ impl Fixer {
     }
 }
 
+pub fn make_fixer(offset:&Point, scale:f64, width:i32, height:i32) -> Fixer {
+    let os:OffsetScaler = OffsetScaler{offset:offset.copy(), scale};
+    Fixer{os, width, height}
+}
 
-pub fn draw_arcs(dt:&mut DrawTarget, arcs:&Vec<Arc>, offset:&Point, scale:f64, line_width:f64, width:i32, height:i32) {
+pub fn get_svg(first_face:&ToothFace,
+               second_face:&ToothFace,
+               fixer:&Fixer,
+               num_teeth:u8) -> String {
+    let mut svg:String = String::new();
+    for i in 0..num_teeth {
+        let angle = (-1.0 * i as f64 / num_teeth as f64) * 2.0 * PI;
+        // println!("{:.3}", angle);
+        let f1:ToothFace = first_face.rotate(&ORIGIN, angle);
+        let f2:ToothFace = second_face.rotate(&ORIGIN, angle);
+        let start_x:f64 = fixer.fix(f1.first()).x;
+        let start_y:f64 = fixer.fix(f1.first()).y;
+        if i > 0 {
+            svg.push_str(format!("   L{:.3} {:.3}", start_x, start_y).as_str());
+        } else {
+            svg.push_str(format!("   M{:.3} {:.3}", start_x, start_y).as_str());
+        }
+        svg.push_str("\n");
+        svg.push_str(get_svg_for_tooth(&f1, &f2, fixer).as_str());
+    }
+    // let m = format!("M{:.3} {:.3}", start.x, start.y);
+    // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+    //
+    // format!("<path d=\"{}{}\" stroke=\"black\" stroke-width=\"1\" fill-opacity=\"0.0\" />", m, a)
+    svg
+}
+
+pub fn get_svg_for_tooth(first_face:&ToothFace,
+                         second_face:&ToothFace,
+                         fixer:&Fixer) -> String {
+    let first_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&first_face);
+    let root_arc:Arc = first_face.root_arc_to(&second_face);
+    let second_arcs:Vec<Arc> = arc_interpolate::get_tooth_face_arcs(&second_face);
+    let mut svg:String = String::new();
+    for arc in first_arcs {
+        svg.push_str(&get_svg_for_arc(&arc, fixer));
+        svg.push_str("\n");
+    }
+    svg.push_str(&get_svg_for_arc(&root_arc, fixer));
+    svg.push_str("\n");
+    for arc in second_arcs {
+        svg.push_str(&get_svg_for_arc(&arc, fixer));
+        svg.push_str("\n");
+    }
+    return svg;
+}
+pub fn get_svg_for_arc(arc:&Arc, fixer:&Fixer) -> String {
+    let mut sweep_flag:u8 = 0;
+    println!("{:.3}", arc.included_angle);
+    if arc.included_angle < 0.0 { sweep_flag = 1; }
+    let mut large_arc_flag:u8 = 0;
+    if arc.included_angle.abs() > PI { large_arc_flag = 1; }
+    // let start = fixer.fix(&arc.start());
+    let end = fixer.fix(&arc.end());
+    let scale = fixer.os.scale;
+    format!("    A{:.3} {:.3} {} {} {} {:.3} {:.3}",
+            arc.circle.radius * scale, arc.circle.radius * scale,
+            0, large_arc_flag, sweep_flag,
+            end.x, end.y)
+}
+
+pub fn draw_arcs(dt:&mut DrawTarget, arcs:&Vec<Arc>, fixer:&Fixer, line_width:f64) {
     let mut white:bool = true;
     let mut index:u32 = 0;
     for arc in arcs {
         let val:u32 = index * 128 / (arcs.len() as u32);
-        draw_arc(dt, arc, offset, scale, line_width, width, height, white, val, index);
+        draw_arc(dt, arc, fixer, line_width, white, val);
         white = ! white;
         index += 1;
     }
 }
 
-pub fn draw_arc(dt:&mut DrawTarget, arc:&Arc, offset:&Point, scale:f64, line_width:f64, width:i32, height:i32, white:bool, val:u32, index:u32) {
-    let os:OffsetScaler = OffsetScaler{offset:offset.copy(), scale};
-    let fixer:Fixer = Fixer{os, width, height};
+pub fn draw_arc(dt:&mut DrawTarget, arc:&Arc, fixer:&Fixer, line_width:f64, white:bool, val:u32) {
     let mut pb = PathBuilder::new();
     let arc_c:Point = fixer.fix(&arc.circle.center);
     let radius:f32 = (arc.circle.radius * fixer.os.scale) as f32;

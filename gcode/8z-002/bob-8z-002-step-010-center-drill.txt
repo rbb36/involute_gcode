@@ -1,0 +1,50 @@
+;; ------------------------------
+;; 8 tooth gear, center drill
+;; Bob Bushman
+;; ------------------------------
+;; Setup
+;; Mount a small center drill
+;; zero Z to tip of center drill
+;; zero X, Y to center of gear
+;; ------------------------------
+;; Notes
+;; ------------------------------
+;; 
+;; ------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; safe default feed speed if not specified
+G0 Z10
+G0 X0 Y0
+
+G68 R000 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R045 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R090 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R135 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R180 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R225 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R270 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69
+
+G68 R315 X0 Y0
+G65 "bob-8z-002-sub-drill-all-positions.txt" Z-1.5
+G69

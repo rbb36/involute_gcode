@@ -1,0 +1,48 @@
+;; -------------------------------------------------------
+;; 8 tooth gear, cut tabs finish to 2.5mm
+;; Bob Bushman
+;; -------------------------------------------------------
+;; Setup
+;; Mount a 3mm 2 flute AlTiN carbide mill
+;; set D73 to 3mm in tool table
+;; set mill to 3000 RPM
+;; zero Z to end of mill
+;; zero X, Y to center of gear
+;; -------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; safe default feed speed if not specified
+G0 Z10
+G0 X0 Y0
+
+G68 R000 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R045 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R090 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R135 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R180 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R225 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R270 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69
+
+G68 R315 X0 Y0
+G65 "bob-8z-002-sub-mill-cut-tabs.txt" D73 Z-2.8
+G69

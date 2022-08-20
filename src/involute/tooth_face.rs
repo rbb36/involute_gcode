@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::geometry::Arc;
 use crate::geometry::Circle;
 use crate::geometry::Point;
@@ -70,14 +72,14 @@ impl ToothFace {
         let cy = (end.y + start.y) / 2.0;
         let center:Point = Point{x:cx, y:cy};
         let radius = center.distance_to(&start);
-        println!("start: {:?}, end: {:?}", start, end);
-        println!("cx: {:.3}, cy {:.3}, center {:?}, radius {:.3}",
-                 cx, cy, center, radius);
+        // println!("start: {:?}, end: {:?}", start, end);
+        // println!("cx: {:.3}, cy {:.3}, center {:?}, radius {:.3}",
+        //          cx, cy, center, radius);
         let start_angle = center.angle_to(&start);
         let end_angle = center.angle_to(&end);
-        let included_angle = start_angle - end_angle;//end_angle - start_angle; // start_angle - end_angle;
+        let included_angle = 1.0 * PI; //start_angle - end_angle;//end_angle - start_angle; // start_angle - end_angle;
         // -1.0 * (end_angle - start_angle);
-        println!("sa{:.3}, ea{:.3}, ia{:.3}", start_angle, end_angle, included_angle);
+        // println!("sa{:.3}, ea{:.3}, ia{:.3}", start_angle, end_angle, included_angle);
         let circle:Circle = Circle{center, radius};
         Arc{circle, start_angle, included_angle}
     }
