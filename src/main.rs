@@ -16,7 +16,24 @@ use involute_gcode::linear_interpolated_demo;
 
 const ORIGIN:Point = Point{x:0.0, y:0.0};
 
+// #[derive(Debug)]
+// pub struct Thing {
+//     pub a: f64,
+// }
+// impl Thing {
+//     pub fn do_stuff(mut self) -> Thing {
+//         println!("thing is doing stuff");
+//         self.a = 2.0;
+//         self
+//     }
+// }
+// fn take_thing(thing:Thing) {
+//     println!("{:?}", thing);
+// }
 fn main() {
+    // let mut thing:Thing = Thing{a:0.0};
+    // thing = thing.do_stuff();
+    // take_thing(thing);
     do_demos();
 }
 
@@ -45,12 +62,12 @@ fn eight_tooth() {
     let height = 1000 as i32;
     
     let offset:Point = Point{x:0.0, y:0.0};
-    let scale:f64 = 10.0;
+    let scale:f64 = 1.0;
 
-    let module:f64 = 2.0;
-    let num_teeth:f64 = 20 as f64;
-    let pressure_angle_degrees:f64 = 10.0;
-    let profile_shift:f64 = 0.0;
+    let module:f64 = 3.0;
+    let num_teeth:f64 = 8 as f64;
+    let pressure_angle_degrees:f64 = 20.0;
+    let profile_shift:f64 = 0.4;
     let params:GearParams =
         GearParams{module, num_teeth, pressure_angle_degrees, profile_shift};
     params.print_params();

@@ -1,0 +1,54 @@
+;; -------------------------------------------------------------
+;; 8 tooth gear, keep tabs while milling tooth faces
+;; Bob Bushman
+;; -------------------------------------------------------------
+;; Parameters
+;; D: mill diameter entry in tool table
+;; Z: depth
+;;
+;; G2 X14.486 Y1.972 I-9.011 J5.348
+;; G2 X13.233 Y0.857 I-6.018 J5.505
+;; G2 X12.196 Y0.260 I-3.416 J4.731
+;; G2 X11.514 Y0.033 I-1.446 J3.212
+;; G2 X11.276 Y-0.000 I-0.297 J1.275
+;; G3 X10.805 Y-3.226 I-0.236 J-1.613
+;; G2 X11.023 Y-3.325 I-0.431 J-1.236
+;; G2 X11.612 Y-3.737 I-1.716 J-3.077
+;; G2 X12.435 Y-4.607 I-3.803 J-4.426
+;; G2 X13.317 Y-6.033 I-6.459 J-4.979
+;; G2 X14.053 Y-8.059 I-9.428 J-4.573
+;; -------------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; safe default feed speed if not specified
+
+; roughly 16mm total length of cut
+F30
+; keep tabs lead-in
+G0 Z5
+G0 X17.737 Y2.452
+G0 Z1
+; keep tabs lead-in
+G1 Z#Z
+; keep tabs begin offset
+G41 D#D
+G1 X17.181 Y4.657
+G1 X15.771 Y3.702
+; face 1
+G2 X14.486 Y1.972 I-9.011 J5.348
+G2 X13.233 Y0.857 I-6.018 J5.505
+G2 X12.196 Y0.260 I-3.416 J4.731
+G2 X11.514 Y0.033 I-1.446 J3.212
+G2 X11.276 Y-0.000 I-0.297 J1.275
+; root
+G3 X10.805 Y-3.226 I-0.236 J-1.613
+; face 2
+G2 X11.023 Y-3.325 I-0.431 J-1.236
+G2 X11.612 Y-3.737 I-1.716 J-3.077
+G2 X12.435 Y-4.607 I-3.803 J-4.426
+G2 X13.317 Y-6.033 I-6.459 J-4.979
+G2 X14.053 Y-8.059 I-9.428 J-4.573
+; move clear of tooth
+G40 ; end offset compensation
+G1 X15.441 Y-8.855
+G1 X16.294 Y-7.424
