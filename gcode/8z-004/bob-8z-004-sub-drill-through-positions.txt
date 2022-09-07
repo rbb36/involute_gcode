@@ -15,5 +15,5 @@ G10 P73 R.5 ; set retract to 0.5mm
 G73 X11.041 Y-1.613 Z#Z R.5 Q1 F25 ; 3mm root
 X14.871 Y-2.164 ; 6.7mm inner
 X16.901 Y-5.712 ; 6.7mm CW
-X17.828 Y0.638 ; 6.7mm CCW ;; should be Y0.683
+X17.828 Y0.638 ; 6.7mm CCW
 G80 ; end peck drilling, return to G98 position
