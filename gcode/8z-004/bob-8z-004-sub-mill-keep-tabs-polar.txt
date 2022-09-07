@@ -1,0 +1,31 @@
+G68 R000 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R045 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R090 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R135 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R180 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R225 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R270 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69
+
+G68 R315 X0 Y0
+G65 "bob-8z-003-sub-mill-keep-tabs.txt" D#D Z#Z
+G69

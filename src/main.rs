@@ -65,9 +65,9 @@ fn eight_tooth() {
     let scale:f64 = 1.0;
 
     let module:f64 = 3.0;
-    let num_teeth:f64 = 8 as f64;
+    let num_teeth:f64 = 24 as f64;
     let pressure_angle_degrees:f64 = 20.0;
-    let profile_shift:f64 = 0.4;
+    let profile_shift:f64 = 0.0;
     let params:GearParams =
         GearParams{module, num_teeth, pressure_angle_degrees, profile_shift};
     params.print_params();

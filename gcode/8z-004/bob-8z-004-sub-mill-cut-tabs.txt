@@ -1,0 +1,39 @@
+;; -------------------------------------------------------------
+;; 8 tooth gear, keep tabs while milling tooth faces subroutine
+;; Bob Bushman
+;; -------------------------------------------------------------
+;; Parameters
+;; D: mill diameter entry in tool table
+;; Z: depth
+;; -------------------------------------------------------------
+G90 ; absolute positioning
+G21 ; metric units
+F10 ; safe default feed speed if not specified
+
+; roughly 16mm total length of cut
+F30
+; keep tabs lead-in
+G0 Z5
+G0 X17.737 Y2.452
+G0 Z1
+; keep tabs lead-in
+G1 Z#Z
+G1 X17.181 Z4.657
+; keep tabs begin offset
+G41 D#D
+G1 X15.636 Y4.239
+G1 X15.771 Y3.702
+; face 1
+G2 X14.486 Y1.972 I-9.011 J5.348
+; clear, traverse, enter
+G1 X15.666 Y0.890
+G1 X14.757 Y-5.335
+G1 X13.317 Y-6.033
+; face 2
+G2 X14.053 Y-8.059 I-9.428 J-4.573
+; mill tip of tooth
+G1 X13.770 Y-8.534
+; move clear of tooth
+G40 ; end offset compensation
+G1 X15.441 Y-8.855
+G1 X16.294 Y-7.424
